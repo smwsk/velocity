@@ -1,0 +1,19 @@
+package ${entity_path};
+
+import java.util.Date;
+import java.io.Serializable;
+
+public class ${entity} implements Serializable {
+	private static final long serialVersionUID = 1L;
+#foreach(${item} in ${list})
+	private ${item.getType()} ${item.getFiled()};
+#end
+#foreach(${item} in ${list})
+	public ${item.getType()} get${item.getCapital()}() {
+		return ${item.getFiled()};
+	}
+	public void set${item.getCapital()}(${item.getType()} ${item.getFiled()}) {
+		this.${item.getFiled()} = ${item.getFiled()};
+	}
+#end
+}

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${dao_path}.${entity}Dao">
+
+	<insert id="insert${entity}" parameterType="${entity_path}.${entity}">
+		insert into ${tableName}(#foreach(${item} in ${list})#if($list.size()==$velocityCount)${item.getFiled()}#else${item.getFiled()},#end#end)
+		values(#foreach(${item} in ${list})#if($list.size()==$velocityCount)#if(${item.getOracleType()}=="Clob")#{${item.getFiled()},jdbcType=VARCHAR}#else#{${item.getFiled()},jdbcType=${item.getOracleType()}}#end#else#if(${item.getOracleType()}=="Clob")#{${item.getFiled()},jdbcType=VARCHAR},#else#{${item.getFiled()},jdbcType=${item.getOracleType()}},#end#end#end) 
+	</insert>
+
+	<delete id="delete${entity}ByMap" parameterType="java.util.Map" >
+		delete from ${tableName} where 1=1
+#foreach(${item} in ${list})
+#if(${item.getType()}=='String')
+#if(${item.getOracleType()}=="Clob")
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and to_char(${item.getFiled()})=#{${item.getFiled()},jdbcType=VARCHAR} 
+		</if>
+#else
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end	
+#else
+		<if test="${item.getFiled()} !=null " >
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#end
+
+	</delete>
+
+	<update id="update${entity}" parameterType="${entity_path}.${entity}">
+		update ${tableName} set
+#foreach(${item} in ${list})
+#if(${velocityCount}==2)
+#if(${item.getOracleType()}=="Clob")
+		${item.getFiled()}=#{${item.getFiled()},jdbcType=VARCHAR} 
+#else
+		${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+#end
+#elseif(${velocityCount}>2)
+#if(${item.getOracleType()}=="Clob")
+		,${item.getFiled()}=#{${item.getFiled()},jdbcType=VARCHAR}
+#else
+		,${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}}
+#end
+#end
+#end
+		where ${list.get(0).getFiled()}=#{${list.get(0).getFiled()},jdbcType=${list.get(0).getOracleType()}} 
+	</update>
+
+	<select id="get${entity}ByMap" parameterType="java.util.Map" resultType="${entity_path}.${entity}">
+		select * from ${tableName} where 1=1 
+#foreach(${item} in ${list})
+#if(${item.getType()}=='String')
+#if(${item.getOracleType()}=="Clob")
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=VARCHAR} 
+		</if>
+#else
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#else
+		<if test="${item.getFiled()} !=null " >
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+	#end
+#end
+	</select>
+	
+	<select id="get${entity}PageByMap" parameterType="java.util.Map" resultType="${entity_path}.${entity}">
+		select * from (select rownum rn,t.* from ${tableName} t where 1=1 
+#foreach(${item} in ${list})
+#if(${item.getType()}=='String')
+#if(${item.getOracleType()}=="Clob")
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=VARCHAR} 
+		</if>
+#else
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#else
+		<if test="${item.getFiled()} !=null " >
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#end
+	<![CDATA[
+		) where rn >(#{page}-1)*#{rows} and rn <=(#{page})*#{rows}
+		]]>
+	</select>
+	
+	<select id="getCountByMap" parameterType="java.util.Map" resultType="int">
+		select count(*) from ${tableName} where 1=1
+#foreach(${item} in ${list})
+#if(${item.getType()}=='String')
+#if(${item.getOracleType()}=="Clob")
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=VARCHAR} 
+		</if>
+#else
+		<if test="${item.getFiled()} !=null and ${item.getFiled()} != ''">
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#else
+		<if test="${item.getFiled()} !=null " >
+			and ${item.getFiled()}=#{${item.getFiled()},jdbcType=${item.getOracleType()}} 
+		</if>
+#end
+#end
+	</select>
+</mapper>

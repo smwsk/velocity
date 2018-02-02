@@ -1,0 +1,193 @@
+jQuery(function($) {
+	$('#datagrid').datagrid( {
+		  loadMsg : "正在加载数据",
+		  url : '${s_entity}/get${entity}PagebyMap',
+		  fit:true,
+		  searching : true,
+		  pagination : true,//分页
+		  striped : true,
+		  singleSelect : true,
+		  rownumbers:true,
+		  toolbar:'#toolbar',
+		  fitColumns:true,
+		  onDblClickRow :function(rowIndex,rowData){
+			  edit${entity}();
+		  }
+		});
+});
+
+
+function delete${entity}()
+{
+	var grid=$('#datagrid');
+	var rows =$('#datagrid').datagrid("getSelected");
+	if(rows==null){
+	    $.messager.alert('提示',"请选择删除项",'info');
+	    return;
+	}
+#foreach(${item} in ${list})
+	var ${item.getFiled()}=rows.${item.getFiled()};
+#end	
+#foreach(${item} in ${list})
+#if(${item.getType()}=="Date")
+	$("#${item.getFiled()}").datebox('setValue',${item.getFiled()});
+#elseif(${item.getType()}=="Integer")
+	$("#${item.getFiled()}").numberbox('setValue',${item.getFiled()});
+#elseif(${item.getType()}=="Long")
+	$("#${item.getFiled()}").numberbox('setValue',${item.getFiled()});
+#else
+	$("#${item.getFiled()}").textbox('setValue',${item.getFiled()});
+#end
+#end
+	$.messager.confirm("操作提示", "您确定要删除吗？", function (data) {  
+		   if (data) {
+		   	$.messager.progress();   
+		    	   $.ajax({   
+		   	 		url: "${s_entity}/delete",
+		   	  		dataType : "json",   
+		   	  		type: "post",  
+		   	  		data:$("#${s_entity}Form").serialize(),
+		   	  		timeout: 8000,   
+		   	  		success: function(data){
+		   	  			$.messager.progress('close'); 
+		   	  			if(data.result=='success') {
+		   	        		$.messager.alert('提示','删除成功！','info');  
+		   	        		grid.datagrid('reload') ;
+		   	    		}else {   
+		   	        		$.messager.alert('错误',data.faildes,'error');
+		   	    		}   
+		   	  		},   
+		   	  		error: function() {
+		   	  			$.messager.progress('close'); 
+		   	  			$.messager.alert('错误','删除失败！','error');
+		   	  		}
+		   	   	 });
+		     }
+	 });  
+}
+
+function insert${entity}()
+{
+		var win=$('#${s_entity}-window');
+		win.show();
+		win.dialog({
+				title:"添加",
+				modal:true,
+				autoOpen:false
+		});
+		
+#foreach(${item} in ${list})
+#if(${item.getType()}=="Date")
+		$("#${item.getFiled()}").datebox('setValue','');
+#elseif(${item.getType()}=="Integer")
+		$("#${item.getFiled()}").numberbox('setValue','');
+#elseif(${item.getType()}=="Long")
+		$("#${item.getFiled()}").numberbox('setValue','');
+#else
+		$("#${item.getFiled()}").textbox('setValue','');
+#end
+#end
+		saveBtn.onclick = function(){ 
+			insert();
+	    }
+}
+function insert()
+{
+	var win=$('#${s_entity}-window');
+    var grid = $('#datagrid');
+    $.messager.progress(); 
+	$.ajax({   
+ 		url: "${s_entity}/insert",
+  		dataType : "json",   
+  		type: "post",  
+  		data:$("#${s_entity}Form").serialize(),
+  		timeout: 10000,   
+  		success: function(data){
+  		$.messager.progress('close'); 
+  			if(data.result=='success') {
+        		$.messager.alert('提示','增加成功！','info');  
+        		win.dialog('close');
+        		grid.datagrid('reload') ;
+    		} else {   
+        		$.messager.alert('错误',data.faildes,'error');
+    		}   
+  		},   
+  		error: function() {
+  			$.messager.progress('close'); 
+  			$.messager.alert('错误','增加失败！','error');
+  		}
+	});	
+}
+function edit${entity}()
+{
+    var rows =$('#datagrid').datagrid("getSelected");
+    if(rows==null)
+    {
+    	$.messager.alert('提示',"请选择修改项",'info');
+    	return;
+    }
+	var win=$('#${s_entity}-window');
+	win.show();
+	win.dialog({
+		title:"编辑",
+		modal:true,
+		autoOpen:false
+	});
+		
+#foreach(${item} in ${list})
+	var ${item.getFiled()}=rows.${item.getFiled()};
+#end	
+
+#foreach(${item} in ${list})
+#if(${item.getType()}=="Date")
+	$("#${item.getFiled()}").datebox('setValue',${item.getFiled()});
+#elseif(${item.getType()}=="Integet")
+	$("#${item.getFiled()}").numberbox('setValue',${item.getFiled()});
+#elseif(${item.getType()}=="Long")
+	$("#${item.getFiled()}").numberbox('setValue',${item.getFiled()});
+#else
+	$("#${item.getFiled()}").textbox('setValue',${item.getFiled()});
+#end
+#end
+	saveBtn.onclick = function(){ 
+		update();
+    }
+
+}
+
+function update(){
+	 var win=$('#${s_entity}-window');
+	 var grid = $('#datagrid');
+	 $.messager.progress(); 
+	 $.ajax({   
+ 		url: "${s_entity}/update",
+  		dataType : "json",   
+  		type: "post",  
+  		data:$("#${s_entity}Form").serialize(),
+  		timeout: 8000,   
+  		success: function(data){
+  			$.messager.progress('close'); 
+  			if(data.result=='success') {
+        		$.messager.alert('提示','编辑成功！','info');  
+        		win.dialog('close');
+        		grid.datagrid('reload') ;
+    		} else {   
+        		$.messager.alert('错误',data.faildes,'error');
+    		}   
+  		},   
+  		error: function() {
+  			$.messager.progress('close'); 
+  			$.messager.alert('错误','编辑失败！','error');
+  		}
+	});
+}
+
+function doSearch() {  
+    var content=$("#contion_Name").searchbox('getValue');
+    //查询参数直接添加在queryParams中     
+    $('#datagrid').datagrid({  
+        url:"${s_entity}/get${entity}PagebyMap",  
+        queryParams:{"${list.get(1).getFiled()}":content}
+    })  
+   $("#datagrid").datagrid('reload');  
+}

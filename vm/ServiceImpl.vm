@@ -1,0 +1,92 @@
+package ${serviceImpl_path};
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import com.ylz.hd.utils.MapTool;
+import java.util.HashMap;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
+import ${entity_path}.${entity};
+import ${dao_path}.${entity}Dao;
+import ${service_path}.${entity}ServiceI;
+
+@Service
+public class ${entity}ServiceImpl  implements ${entity}ServiceI {
+	
+	@Resource
+	private ${entity}Dao ${s_entity}Dao;
+	private static Logger log = Logger.getLogger(${entity}ServiceImpl.class);
+	
+	public Map<String,Object> insert${entity}(${entity} ${s_entity}){
+		Map<String, Object> map=new HashMap<String, Object>();
+		try {
+			 ${s_entity}Dao.insert${entity}(${s_entity});
+			 map=MapTool.setSuccessResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage(),e);
+			map=MapTool.setFailResult(map, "插入失败，请联系管理员");
+		}
+		return map;
+	}
+	
+	public Map<String,Object> update${entity}(${entity} ${s_entity}){
+		Map<String, Object> map=new HashMap<String, Object>();
+		try {
+			${s_entity}Dao.update${entity}(${s_entity});
+			map=MapTool.setSuccessResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage(),e);
+			map=MapTool.setFailResult(map, "更新失败，请联系管理员");
+		}
+		return map;
+	}
+	
+	public Map<String,Object> delete${entity}ByMap(Map<String,Object> map){
+		Map<String, Object> result_map=new HashMap<String, Object>();
+		try {
+			${s_entity}Dao.delete${entity}ByMap(map);
+			result_map=MapTool.setSuccessResult(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage(),e);
+			result_map=MapTool.setFailResult(map, "删除失败，请联系管理员");
+		}
+		return result_map;
+	}
+	public List<${entity}> get${entity}ByMap(Map<String,Object> map){
+		List<${entity}> ${s_entity}_list=null;
+		try {
+			${s_entity}_list=${s_entity}Dao.get${entity}ByMap(map);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			e.printStackTrace();
+		}
+		return ${s_entity}_list;
+	}
+	
+	public List<${entity}> get${entity}PageByMap(Map<String,Object> map){
+		List<${entity}> ${s_entity}_list=null;
+		try {
+			${s_entity}_list=${s_entity}Dao.get${entity}PageByMap(map);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			e.printStackTrace();
+		}
+		return ${s_entity}_list;
+	}
+	
+	public int getCountByMap(Map<String,Object> map){
+		int count=0;
+		try {
+			count=${s_entity}Dao.getCountByMap(map);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			e.printStackTrace();
+		}
+		return count;
+	}
+}

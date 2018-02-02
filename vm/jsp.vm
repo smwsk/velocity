@@ -1,0 +1,77 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <base href="<%=basePath%>">
+  <title>模板标题</title>
+   	 <jsp:include page="../base/meta.jsp"></jsp:include>
+	 <jsp:include page="../base/easyui.jsp"></jsp:include>
+	 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jstool.js"></script>
+	 <script type="text/javascript" src="<%=request.getContextPath()%>/${js_path}/${s_entity}.js"></script>
+  </head>
+  <body class="easyui-layout" style="width:100%;height:100%;">
+	<!-- 主体 -->
+	<div id="content" region="center"  style="padding:1px;">
+			<table id="datagrid" title="模板标题" >
+				<thead>
+					<tr>
+#foreach(${item} in ${list})
+					<th field="${item.getFiled()}" width="100" align="center">${item.getFiled()}</th>
+#end
+					</tr>
+				</thead>
+			</table>	
+			
+		<div id="toolbar" style="display: none;">
+			<table>
+				<tr>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton" 
+						data-options="iconCls:'icon-add'" onclick="insert${entity}();">新增</a></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton" 
+						data-options="iconCls:'icon-edit'" onclick="edit${entity}();">修改</a></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<td><a href="javascript:void(0);" class="easyui-linkbutton" 
+						data-options="iconCls:'icon-remove'" onclick="delete${entity}();">删除</a></td>
+					<td><div class="datagrid-btn-separator"></div></td>
+					<td>
+					<input class="easyui-searchbox"  searcher="doSearch" style="width:150px;" name="contion_Name" id="contion_Name" data-option="searcher:query" prompt="请输入模板名称" type="text" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="${s_entity}-window" style="display:none;">
+			<form id="${s_entity}Form" method="post">
+				<table class="info_table">
+					<tbody>
+#foreach(${item} in ${list})
+						<tr>
+							<th>${item.getFiled()}:</th>
+#if(${item.getType()}=="Date")
+							<td><input  name="${item.getFiled()}" id="${item.getFiled()}" class="easyui-datebox"/></td>
+#elseif(${item.getType()}=="Integer")
+							<td><input  name="${item.getFiled()}" id="${item.getFiled()}" class="easyui-numberbox"/></td>
+#elseif(${item.getType()}=="Long")
+							<td><input  name="${item.getFiled()}" id="${item.getFiled()}" class="easyui-numberbox"/></td>
+#else
+							<td><input  name="${item.getFiled()}" id="${item.getFiled()}" class="easyui-textbox"/></td>
+#end
+						</tr>
+#end
+					</tbody>
+				</table>
+			</form>
+			
+			<div style="text-align:center;padding:5px;">
+				<a id="saveBtn" href="javascript:void(0)"  plain="true" class="easyui-linkbutton" icon="icon-save">保存</a>
+			</div>
+		</div>	
+	</div>
+  </body>
+</html>

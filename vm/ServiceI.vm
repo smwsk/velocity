@@ -1,0 +1,22 @@
+package ${service_path};
+
+import java.util.Date;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import ${entity_path}.${entity};
+
+public interface ${entity}ServiceI{
+
+	public Map<String,Object> insert${entity}(${entity} ${s_entity});
+
+	public Map<String,Object> update${entity}(${entity} ${s_entity});
+
+	public Map<String,Object> delete${entity}ByMap(Map<String,Object> map);
+
+	public List<${entity}> get${entity}ByMap(Map<String,Object> map);
+	
+	public List<${entity}> get${entity}PageByMap(Map<String,Object> map);
+
+	public int getCountByMap(Map<String,Object> map);
+}

@@ -1,0 +1,74 @@
+package ${controller_path};
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Controller;
+import com.ylz.hd.model.DataGrid;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import ${entity_path}.${entity};
+import ${service_path}.${entity}ServiceI;
+import com.ylz.hd.controller.base.BaseController;
+@Controller
+@RequestMapping("/${s_entity}")
+public class ${entity}Controller extends BaseController{
+	@Resource
+	private ${entity}ServiceI ${s_entity}Service;
+
+	@RequestMapping("/topage")
+	public String topage(){
+		return "${jsp_path}/${s_entity}";
+	}
+
+	@ResponseBody
+	@RequestMapping("/getList")
+	public List<${entity}> getList(${entity} ${s_entity}){
+		Map<String, Object> map= new HashMap<String, Object>();
+#foreach(${item} in ${list})
+		map.put("${item.getFiled()}",${s_entity}.get${item.getCapital()}());
+#end		
+		List<${entity}> list = ${s_entity}Service.get${entity}ByMap(map);
+		return list;
+	}
+
+	@ResponseBody
+	@RequestMapping("/delete")
+	public Map<String, Object> delete(${entity} ${s_entity}){
+		Map<String, Object> result_map=null;
+		Map<String, Object> map= new HashMap<String, Object>();
+#foreach(${item} in ${list})	
+		map.put("${item.getFiled()}", ${s_entity}.get${item.getCapital()}());
+#end
+		result_map = ${s_entity}Service.delete${entity}ByMap(map);
+		return result_map;
+	}
+
+	@ResponseBody
+	@RequestMapping("/insert")
+	public Map<String, Object> insert(${entity} ${s_entity}){
+		return ${s_entity}Service.insert${entity}(${s_entity});
+	}
+
+	@ResponseBody
+	@RequestMapping("/update")
+	public Map<String, Object> update(${entity} ${s_entity}){
+		return ${s_entity}Service.update${entity}(${s_entity});
+	}
+	
+	/** EasyUi DataGrid分页*/
+	@ResponseBody
+	@RequestMapping(value="/get${entity}PagebyMap")
+	public DataGrid<${entity}> get${entity}PagebyMap(${entity} ${s_entity},int page,int rows)
+	{
+		Map<String, Object> map= new HashMap<String, Object>();
+		map.put("page",page);
+		map.put("rows",rows);
+#foreach(${item} in ${list})	
+		map.put("${item.getFiled()}", ${s_entity}.get${item.getCapital()}());
+#end
+		return new DataGrid<${entity}>(${s_entity}Service.getCountByMap(map),
+		${s_entity}Service.get${entity}PageByMap(map));
+	}
+}
